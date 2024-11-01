@@ -1,10 +1,8 @@
 package com.car360.carcomparison.car_comparison_module.service;
 
-import com.car360.carcomparison.car_comparison_module.dto.BaseCarDTO;
-import com.car360.carcomparison.car_comparison_module.dto.CompareRequestDTO;
-import com.car360.carcomparison.car_comparison_module.dto.CompareResponseDTO;
-import com.car360.carcomparison.car_comparison_module.dto.ComparisonDTO;
+import com.car360.carcomparison.car_comparison_module.dto.*;
 import com.car360.carcomparison.car_comparison_module.exception.ResourceNotFoundException;
+import com.car360.carcomparison.car_comparison_module.mapper.CommonMapper;
 import com.car360.carcomparison.car_comparison_module.model.Car;
 import com.car360.carcomparison.car_comparison_module.model.Comparison;
 import com.car360.carcomparison.car_comparison_module.model.ComparisonItem;
@@ -34,6 +32,9 @@ public class CarComparisonServiceImpl implements CarComparisonService {
     @Autowired
     private CarRepository carRepository;
 
+    @Autowired
+    private CommonMapper commonMapper;
+
 
     @Override
     public CompareResponseDTO compareCars(CompareRequestDTO compareRequest) {
@@ -43,18 +44,20 @@ public class CarComparisonServiceImpl implements CarComparisonService {
         // Fetch compare cars
         List<Car> compareCars = carService.getCarsByIds(compareRequest.getCompareCarIds());
 
+
+        // Get specifications for base car and compare car
+        Map<String, String> baseSpecs = baseCar.getCarSpecifications().stream()
+                .collect(Collectors.toMap(
+                        cs -> cs.getSpecification().getName(),
+                        cs -> cs.getValue()
+                ));
+
         // Prepare base car DTO
-        BaseCarDTO baseCarDTO = new BaseCarDTO(baseCar.getCarId(), baseCar.getName());
+        BaseCarDTO baseCarDTO = new BaseCarDTO(baseCar.getCarId(), baseCar.getName(), baseSpecs);
 
         // Generate comparison results
         List<ComparisonDTO> comparisonDTOs = compareCars.stream()
                 .map(compareCar -> {
-                    // Get specifications for base car and compare car
-                    Map<String, String> baseSpecs = baseCar.getCarSpecifications().stream()
-                            .collect(Collectors.toMap(
-                                    cs -> cs.getSpecification().getName(),
-                                    cs -> cs.getValue()
-                            ));
 
                     Map<String, String> compareSpecs = compareCar.getCarSpecifications().stream()
                             .collect(Collectors.toMap(
@@ -115,8 +118,9 @@ public class CarComparisonServiceImpl implements CarComparisonService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Comparison> getComparisonHistory(User user) {
-        return comparisonRepository.findByUserOrderByTimestampDesc(user);
+    public List<ComparisonHistoryDTO> getComparisonHistory(User user) {
+        List<Comparison> comparisons = comparisonRepository.findByUserOrderByTimestampDesc(user);
+        return commonMapper.toComparisonHistoryDTOs(comparisons);
     }
 
 }

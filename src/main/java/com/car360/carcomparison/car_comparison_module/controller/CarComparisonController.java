@@ -2,7 +2,7 @@ package com.car360.carcomparison.car_comparison_module.controller;
 
 import com.car360.carcomparison.car_comparison_module.dto.CompareRequestDTO;
 import com.car360.carcomparison.car_comparison_module.dto.CompareResponseDTO;
-import com.car360.carcomparison.car_comparison_module.model.Comparison;
+import com.car360.carcomparison.car_comparison_module.dto.ComparisonHistoryDTO;
 import com.car360.carcomparison.car_comparison_module.model.User;
 import com.car360.carcomparison.car_comparison_module.service.CarComparisonService;
 import com.car360.carcomparison.car_comparison_module.service.CarService;
@@ -65,10 +65,10 @@ public class CarComparisonController {
      * @return ResponseEntity containing a list of ComparisonHistoryDTOs.
      */
     @GetMapping
-    public ResponseEntity<List<Comparison>> getComparisonHistory(@RequestParam("userId") Long userId) {
+    public ResponseEntity<List<ComparisonHistoryDTO>> getComparisonHistory(@RequestParam("userId") Long userId) {
         User user = userService.getUserByUserId(userId);
         // Retrieve comparison histories
-        List<Comparison> comparisons = comparisonService.getComparisonHistory(user);
+        List<ComparisonHistoryDTO> comparisons = comparisonService.getComparisonHistory(user);
 
         return ResponseEntity.ok(comparisons);
     }
