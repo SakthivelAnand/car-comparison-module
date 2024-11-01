@@ -5,11 +5,14 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "Car", schema = "car360", indexes = {
         @Index(name = "idx_brand", columnList = "brand"),
@@ -17,6 +20,7 @@ import java.util.List;
         @Index(name = "idx_price_range", columnList = "price_range"),
         @Index(name = "idx_model_year", columnList = "model_year")
 })
+@ToString(exclude = "carSpecifications")
 public class Car {
 
     @Id

@@ -1,12 +1,15 @@
 package com.car360.carcomparison.car_comparison_module.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "CarSpecifications", indexes = {
         @Index(name = "idx_car_id", columnList = "car_id"),

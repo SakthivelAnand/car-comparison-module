@@ -4,11 +4,18 @@ import com.car360.carcomparison.car_comparison_module.dto.BaseCarDTO;
 import com.car360.carcomparison.car_comparison_module.dto.CompareRequestDTO;
 import com.car360.carcomparison.car_comparison_module.dto.CompareResponseDTO;
 import com.car360.carcomparison.car_comparison_module.dto.ComparisonDTO;
+import com.car360.carcomparison.car_comparison_module.exception.ResourceNotFoundException;
 import com.car360.carcomparison.car_comparison_module.model.Car;
-import com.car360.carcomparison.car_comparison_module.repository.CarComparisonRepository;
+import com.car360.carcomparison.car_comparison_module.model.Comparison;
+import com.car360.carcomparison.car_comparison_module.model.ComparisonItem;
+import com.car360.carcomparison.car_comparison_module.model.User;
+import com.car360.carcomparison.car_comparison_module.repository.CarRepository;
+import com.car360.carcomparison.car_comparison_module.repository.ComparisonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,7 +29,11 @@ public class CarComparisonServiceImpl implements CarComparisonService {
     private CarService carService;
 
     @Autowired
-    private CarComparisonRepository comparisonRepository;
+    private ComparisonRepository comparisonRepository;
+
+    @Autowired
+    private CarRepository carRepository;
+
 
     @Override
     public CompareResponseDTO compareCars(CompareRequestDTO compareRequest) {
@@ -71,6 +82,41 @@ public class CarComparisonServiceImpl implements CarComparisonService {
                 .collect(Collectors.toList());
 
         return new CompareResponseDTO(baseCarDTO, comparisonDTOs);
+    }
+
+    @Override
+    @Transactional
+    public Comparison saveComparison(User user, List<Integer> carIds) {
+        // Fetch cars by IDs
+        List<Car> cars = carRepository.findAllById(carIds);
+        if (cars.size() != carIds.size()) {
+            List<Integer> foundIds = cars.stream().map(Car::getCarId).collect(Collectors.toList());
+            List<Integer> missingIds = carIds.stream()
+                    .filter(id -> !foundIds.contains(id))
+                    .collect(Collectors.toList());
+            throw new ResourceNotFoundException("Cars not found with IDs: " + missingIds);
+        }
+
+        // Create a new Comparison
+        Comparison comparison = new Comparison();
+        comparison.setUser(user);
+        comparison.setTimestamp(LocalDateTime.now());
+
+        // Create ComparisonItems
+        List<ComparisonItem> comparisonItems = cars.stream()
+                .map(car -> new ComparisonItem(comparison, car))
+                .collect(Collectors.toList());
+
+        comparison.setComparisonItems(new java.util.HashSet<>(comparisonItems));
+
+        // Save Comparison along with ComparisonItems
+        return comparisonRepository.save(comparison);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Comparison> getComparisonHistory(User user) {
+        return comparisonRepository.findByUserOrderByTimestampDesc(user);
     }
 
 }

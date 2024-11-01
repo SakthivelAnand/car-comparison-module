@@ -1,13 +1,15 @@
 package com.car360.carcomparison.car_comparison_module.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "Specifications")
 public class Specification {
@@ -26,7 +28,7 @@ public class Specification {
 
 
     @OneToMany(mappedBy = "specification", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JsonBackReference
+    @JsonIgnore
     private Set<CarSpecification> specifications;
 
     public Specification(Integer specId, String name, DataType dataType) {

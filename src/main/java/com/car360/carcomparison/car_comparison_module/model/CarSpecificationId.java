@@ -2,11 +2,14 @@ package com.car360.carcomparison.car_comparison_module.model;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 
 import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
 @Embeddable
 public class CarSpecificationId implements Serializable {
 
