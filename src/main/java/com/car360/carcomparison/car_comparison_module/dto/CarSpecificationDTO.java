@@ -12,7 +12,6 @@ public class CarSpecificationDTO {
     @JsonProperty("value")
     private String value;
 
-    // Constructors
     public CarSpecificationDTO() {}
 
     public CarSpecificationDTO(String specificationName, String value) {

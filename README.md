@@ -47,12 +47,90 @@ This API provides endpoints for managing cars, comparing their specifications, a
     * Query parameter: `userId` (Long).
     * Response: A list of `ComparisonHistoryDTO` objects.
 
+### Specifications API
 
-## Authentication
+*   **POST /api/specifications**: Create a new specification.
+    *   Request Body:
 
-* API endpoints that require authentication (e.g., creating or updating cars) should include appropriate security measures (e.g., JWT tokens, API keys).
-* The `@CrossOrigin` annotation in `CarComparisonController` allows requests from any origin. Adjust the `origins` property as needed for production environments.
+    ```json
+    {
+      "name": "string",
+      "dataType": "STRING|INTEGER|FLOAT|BOOLEAN"
+    }
+    ```
 
+    *   Response: Returns the created `Specification` object with a generated `specId`.
+
+*   **GET /api/specifications/{specId}**: Retrieves a specification by its ID.
+    *   Path Parameters:`specId` (Integer): The ID of the specification to retrieve.
+    *   Response: Returns the `Specification` object.
+
+*   **PUT /api/specifications/{specId}**: Updates an existing specification.
+    *   Path Parameters: `specId` (Integer): The ID of the specification to update.
+    *   Request Body:
+
+    ```json
+    {
+      "name": "string",
+      "dataType": "STRING|INTEGER|FLOAT|BOOLEAN"
+    }
+    ```
+
+    *   Response: Returns the updated `Specification` object.
+
+*   **DELETE /api/specifications/{specId}**: Deletes a specification by its ID.
+    *   Path Parameters: `specId` (Integer): The ID of the specification to delete.
+    *   Response: Returns HTTP status 204 No Content.
+
+*   **GET /api/specifications**: Retrieves all specifications.
+    *   Response: Returns a list of `Specification` objects.
+
+
+### CarSpecifications API
+
+**Base URL:** `/api/car-specifications`
+
+*   **POST /api/car-specifications**: Creates a new `CarSpecification`, linking a specification to a car.
+    *   Request Body:
+
+    ```json
+    {
+      "carId": integer,
+      "specId": integer,
+      "value": "string"
+    }
+    ```
+
+    *   Response: Returns the created `CarSpecification` object.
+
+*   **GET /api/car-specifications/cars/{carId}/specs/{specId}**: Retrieves a `CarSpecification` by `carId` and `specId`.
+    *   Path Parameters:
+        *   `carId` (Integer): The ID of the car.
+        *   `specId` (Integer): The ID of the specification.
+    *   Response: Returns the `CarSpecification` object.
+
+*   **PUT /api/car-specifications/cars/{carId}/specs/{specId}**: Updates an existing `CarSpecification`.
+    *   Path Parameters:
+        *   `carId` (Integer): The ID of the car.
+        *   `specId` (Integer): The ID of the specification.
+    *   Request Body:
+
+    ```json
+    {
+      "value": "string"
+    }
+    ```
+
+    *   Response: Returns the updated `CarSpecification` object.
+
+*   **DELETE /api/car-specifications/cars/{carId}/specs/{specId}**: Deletes a `CarSpecification`.
+    *   Path Parameters:
+        *   `carId` (Integer): The ID of the car.
+        *   `specId` (Integer): The ID of the specification.
+    *   Response: Returns HTTP status 204 No Content.
+
+*   **GET /api/car-specifications**: Retrieves all `CarSpecifications`.
+    *   Response: Returns a list of `CarSpecification` objects.
 
 
 ## Project Structure

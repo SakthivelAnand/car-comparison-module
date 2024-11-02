@@ -14,6 +14,7 @@ import java.util.Set;
 public class Specification {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "spec_id")
     private Integer specId;
 

@@ -1,11 +1,7 @@
 package com.car360.carcomparison.car_comparison_module.mapper;
 
-import com.car360.carcomparison.car_comparison_module.dto.CarResponseDTO;
-import com.car360.carcomparison.car_comparison_module.dto.CarSpecificationDTO;
-import com.car360.carcomparison.car_comparison_module.dto.ComparisonHistoryDTO;
-import com.car360.carcomparison.car_comparison_module.model.Car;
-import com.car360.carcomparison.car_comparison_module.model.CarSpecification;
-import com.car360.carcomparison.car_comparison_module.model.Comparison;
+import com.car360.carcomparison.car_comparison_module.dto.*;
+import com.car360.carcomparison.car_comparison_module.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -71,6 +67,43 @@ public class CommonMapper {
         return comparisons.stream()
                 .map(this::toComparisonHistoryDTO)
                 .collect(Collectors.toList());
+    }
+
+    // Specification mapping methods
+    public SpecificationDTO toSpecificationDTO(Specification specification) {
+        return new SpecificationDTO(
+                specification.getSpecId(),
+                specification.getName(),
+                specification.getDataType()
+        );
+    }
+
+    public Specification toSpecificationEntity(SpecificationDTO dto) {
+        return new Specification(
+                dto.getSpecId(),
+                dto.getName(),
+                dto.getDataType()
+        );
+    }
+
+    // CarSpecification mapping methods
+    public CarSpecificationResponseDTO toCarSpecificationResponseDTO(CarSpecification carSpecification) {
+        return new CarSpecificationResponseDTO(
+                carSpecification.getId().getCarId(),
+                carSpecification.getId().getSpecId(),
+                carSpecification.getSpecification().getName(),
+                carSpecification.getValue()
+        );
+    }
+
+    public CarSpecification toCarSpecificationEntity(CarSpecificationResponseDTO dto, Car car, Specification specification) {
+        CarSpecificationId id = new CarSpecificationId(dto.getCarId(), dto.getSpecId());
+        return new CarSpecification(
+                id,
+                car,
+                specification,
+                dto.getValue()
+        );
     }
 }
 
