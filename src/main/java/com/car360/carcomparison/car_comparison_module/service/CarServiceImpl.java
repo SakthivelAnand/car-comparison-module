@@ -4,20 +4,15 @@ package com.car360.carcomparison.car_comparison_module.service;
 import com.car360.carcomparison.car_comparison_module.dto.CarDTO;
 import com.car360.carcomparison.car_comparison_module.exception.ResourceNotFoundException;
 import com.car360.carcomparison.car_comparison_module.model.Car;
-import com.car360.carcomparison.car_comparison_module.model.CarSpecification;
 import com.car360.carcomparison.car_comparison_module.repository.CarRepository;
 import com.car360.carcomparison.car_comparison_module.repository.CarSpecificationRepository;
 import com.car360.carcomparison.car_comparison_module.utils.SimilarityUtil;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 

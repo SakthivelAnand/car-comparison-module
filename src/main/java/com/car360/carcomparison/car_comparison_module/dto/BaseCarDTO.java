@@ -1,15 +1,13 @@
 package com.car360.carcomparison.car_comparison_module.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.Map;
 
 /**
  * DTO representing the base car details.
  */
-@Getter
-@Setter
+@Data
 public class BaseCarDTO {
     private Integer carId;
     private String name;

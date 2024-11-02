@@ -1,13 +1,11 @@
 package com.car360.carcomparison.car_comparison_module.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 public class ComparisonHistoryDTO {
 
     private Long comparisonId;

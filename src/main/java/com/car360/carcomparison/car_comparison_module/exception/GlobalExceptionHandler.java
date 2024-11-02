@@ -1,5 +1,6 @@
 package com.car360.carcomparison.car_comparison_module.exception;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -7,7 +8,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -33,14 +36,19 @@ public class GlobalExceptionHandler {
      * @return A response entity with validation error details.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
+        Map<String, Object> body = new HashMap<>();
+        List<Map<String, String>> errors = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
+            Map<String, String> errorDetails = new HashMap<>();
             String fieldName = ((FieldError) error).getField();
-            String message = error.getDefaultMessage();
-            errors.put(fieldName, message);
+            String errorMessage = error.getDefaultMessage();
+            errorDetails.put("field", fieldName);
+            errorDetails.put("message", errorMessage);
+            errors.add(errorDetails);
         });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        body.put("errors", errors);
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
     /**

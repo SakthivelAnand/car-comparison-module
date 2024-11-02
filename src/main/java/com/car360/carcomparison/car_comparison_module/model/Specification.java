@@ -1,6 +1,5 @@
 package com.car360.carcomparison.car_comparison_module.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
