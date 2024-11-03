@@ -20,7 +20,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/comparisons")
-@CrossOrigin(origins = "*") // Adjust origins as needed
+@CrossOrigin(origins = "*")
 public class CarComparisonController {
 
     @Autowired

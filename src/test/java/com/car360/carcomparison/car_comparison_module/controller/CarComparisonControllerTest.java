@@ -54,7 +54,6 @@ class CarComparisonControllerTest {
         mockUser = new User();
         mockUser.setUserId(1L);
         mockUser.setUsername("testuser");
-        // Initialize other user properties as needed
     }
 
     /**
@@ -62,16 +61,13 @@ class CarComparisonControllerTest {
      */
     @Test
     void testCompareCars_Success() throws Exception {
-        // Prepare the request DTO
         CompareRequestDTO compareRequest = new CompareRequestDTO();
         compareRequest.setUserId(mockUser.getUserId());
         compareRequest.setBaseCarId(100);
         compareRequest.setCompareCarIds(Arrays.asList(101, 102));
         compareRequest.setShowOnlyDifferences(true);
 
-        // Prepare the response DTO
         CompareResponseDTO compareResponse = new CompareResponseDTO();
-        // Initialize compareResponse properties as needed
 
         // Mock the UserService
         given(userService.getUserByUserId(mockUser.getUserId())).willReturn(mockUser);
@@ -89,9 +85,7 @@ class CarComparisonControllerTest {
                 .content(objectMapper.writeValueAsString(compareRequest)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        // Add more assertions based on CompareResponseDTO structure
-        ;
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     /**
@@ -101,7 +95,6 @@ class CarComparisonControllerTest {
     void testCompareCars_InvalidInput() throws Exception {
         // Prepare an invalid request DTO (missing userId)
         CompareRequestDTO compareRequest = new CompareRequestDTO();
-        // compareRequest.setUserId(null); // Explicitly omitted
         compareRequest.setBaseCarId(100);
         compareRequest.setCompareCarIds(Arrays.asList(101, 102));
         compareRequest.setShowOnlyDifferences(true);
@@ -111,7 +104,6 @@ class CarComparisonControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(compareRequest)))
                 .andExpect(status().isBadRequest());
-        // Further assertions can be added based on validation error messages
     }
 
     /**
@@ -142,9 +134,7 @@ class CarComparisonControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)))
-        // Add more assertions based on ComparisonHistoryDTO structure
-        ;
+                .andExpect(jsonPath("$", hasSize(2)));
     }
 
     /**
@@ -184,6 +174,5 @@ class CarComparisonControllerTest {
                 .param("userId", invalidUserId.toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
-        // Adjust based on how your controller handles exceptions
     }
 }

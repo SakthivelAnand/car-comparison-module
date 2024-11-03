@@ -1,7 +1,9 @@
 package com.car360.carcomparison.car_comparison_module.utils;
 
 import com.car360.carcomparison.car_comparison_module.model.Car;
+import com.car360.carcomparison.car_comparison_module.model.CarSpecification;
 import com.car360.carcomparison.car_comparison_module.repository.CarRepository;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,21 +19,16 @@ public class SimilarityUtil {
     @Autowired
     private CarRepository carRepository;
 
-    /**
-     * Finds similar cars to the base car based on defined similarity criteria.
-     *
-     * @param baseCar The car to compare against.
-     * @param limit   The maximum number of similar cars to return.
-     * @return A list of similar cars.
-     */
     public List<Car> findSimilarCars(Car baseCar, int limit) {
-        // Extract attributes from the base car
+        Hibernate.initialize(baseCar.getCarSpecifications());
+        baseCar.getCarSpecifications().forEach(spec -> Hibernate.initialize(spec.getSpecification()));
         String brand = baseCar.getBrand();
         String category = baseCar.getCategory();
         Integer priceRange = baseCar.getPriceRange();
         Integer modelYear = baseCar.getModelYear();
+        List<CarSpecification> baseSpecifications = baseCar.getCarSpecifications(); // Get base car specifications
 
-        // Define similarity criteria thresholds
+        // Similarity criteria thresholds
         int priceRangeTolerance = 1; // ±1
         int modelYearTolerance = 1;   // ±1
 
@@ -57,9 +54,9 @@ public class SimilarityUtil {
             candidateCars.addAll(additionalCars);
         }
 
-        // Assign similarity scores based on the number of matching criteria
+        // Assign similarity scores based on the number of matching criteria and specifications
         List<Car> similarCars = candidateCars.stream()
-                .map(car -> new CarSimilarity(car, calculateSimilarityScore(baseCar, car)))
+                .map(car -> new CarSimilarity(car, calculateOverallSimilarityScore(baseCar, car, baseSpecifications)))
                 .sorted(Comparator.comparingInt(CarSimilarity::getSimilarityScore).reversed()) // Sort by highest similarity
                 .limit(limit) // Limit to the specified number
                 .map(CarSimilarity::getCar)
@@ -68,37 +65,34 @@ public class SimilarityUtil {
         return similarCars;
     }
 
-    /**
-     * Calculates a similarity score between two cars based on matching criteria.
-     *
-     * @param baseCar    The base car.
-     * @param compareCar The car to compare against.
-     * @return An integer representing the similarity score.
-     */
-    private int calculateSimilarityScore(Car baseCar, Car compareCar) {
+    // Method to calculate similarity score based on specifications
+    private int calculateSpecificationSimilarityScore(List<CarSpecification> baseSpecifications, List<CarSpecification> candidateSpecifications) {
+        int matchingSpecifications = 0;
+
+        for (CarSpecification baseSpec : baseSpecifications) {
+            for (CarSpecification candidateSpec : candidateSpecifications) {
+                if (baseSpec.getSpecification().getSpecId().equals(candidateSpec.getSpecification().getSpecId()) &&
+                        baseSpec.getValue().equalsIgnoreCase(candidateSpec.getValue())) {
+                    matchingSpecifications++;
+                    break;
+                }
+            }
+        }
+        return matchingSpecifications;
+    }
+
+    // Method to calculate the overall similarity score combining general attributes and specification match
+    private int calculateOverallSimilarityScore(Car baseCar, Car candidateCar, List<CarSpecification> baseSpecifications) {
         int score = 0;
 
-        // Check if the brand matches
-        if (baseCar.getBrand().equalsIgnoreCase(compareCar.getBrand())) {
-            score += 1;
-        }
+        // General criteria similarity
+        if (candidateCar.getBrand().equalsIgnoreCase(baseCar.getBrand())) score++;
+        if (candidateCar.getCategory().equalsIgnoreCase(baseCar.getCategory())) score++;
+        if (Math.abs(candidateCar.getPriceRange() - baseCar.getPriceRange()) <= 1) score++;
+        if (Math.abs(candidateCar.getModelYear() - baseCar.getModelYear()) <= 1) score++;
 
-        // Check if the category matches
-        if (baseCar.getCategory().equalsIgnoreCase(compareCar.getCategory())) {
-            score += 1;
-        }
-
-        // Check if the price range is within tolerance
-        if (Math.abs(baseCar.getPriceRange() - compareCar.getPriceRange()) <= 1) {
-            score += 1;
-        }
-
-        // Check if the model year is within tolerance
-        if (Math.abs(baseCar.getModelYear() - compareCar.getModelYear()) <= 1) {
-            score += 1;
-        }
-
-        // Add more criteria and adjust scoring as needed
+        // Add specification similarity score
+        score += calculateSpecificationSimilarityScore(baseSpecifications, candidateCar.getCarSpecifications());
 
         return score;
     }

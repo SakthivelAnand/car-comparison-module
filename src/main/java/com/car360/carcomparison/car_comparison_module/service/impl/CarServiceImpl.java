@@ -1,4 +1,4 @@
-package com.car360.carcomparison.car_comparison_module.service;
+package com.car360.carcomparison.car_comparison_module.service.impl;
 
 
 import com.car360.carcomparison.car_comparison_module.dto.CarDTO;
@@ -6,6 +6,7 @@ import com.car360.carcomparison.car_comparison_module.exception.ResourceNotFound
 import com.car360.carcomparison.car_comparison_module.model.Car;
 import com.car360.carcomparison.car_comparison_module.repository.CarRepository;
 import com.car360.carcomparison.car_comparison_module.repository.CarSpecificationRepository;
+import com.car360.carcomparison.car_comparison_module.service.CarService;
 import com.car360.carcomparison.car_comparison_module.utils.SimilarityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,9 +101,6 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public List<Car> searchCars(String brand, String model, Integer year, String category, Integer priceRange) {
-        // Implement search logic based on provided criteria
-        // This is a simple implementation; consider using Specifications or QueryDSL for more flexibility
-
         if (brand != null && !brand.isEmpty()) {
             return carRepository.findByBrandContainingIgnoreCase(brand);
         } else if (category != null && !category.isEmpty()) {

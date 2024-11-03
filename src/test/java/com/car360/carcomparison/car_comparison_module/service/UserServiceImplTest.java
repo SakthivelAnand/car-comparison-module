@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import com.car360.carcomparison.car_comparison_module.exception.ResourceNotFoundException;
 import com.car360.carcomparison.car_comparison_module.model.User;
 import com.car360.carcomparison.car_comparison_module.repository.UserRepository;
+import com.car360.carcomparison.car_comparison_module.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +26,6 @@ public class UserServiceImplTest {
 
     @Test
     public void testGetUserByUserId_Success() {
-        // Arrange
         Long userId = 1L;
         User user = new User();
         user.setUserId(userId);
@@ -33,10 +33,8 @@ public class UserServiceImplTest {
 
         when(userRepository.findByUserId(userId)).thenReturn(Optional.of(user));
 
-        // Act
         User result = userServiceImpl.getUserByUserId(userId);
 
-        // Assert
         assertNotNull(result);
         assertEquals(userId, result.getUserId());
         assertEquals("Test User", result.getUsername());
@@ -46,12 +44,10 @@ public class UserServiceImplTest {
 
     @Test
     public void testGetUserByUserId_NotFound() {
-        // Arrange
         Long userId = 1L;
 
         when(userRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
-        // Act & Assert
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             userServiceImpl.getUserByUserId(userId);
         });

@@ -21,7 +21,6 @@ public class Specification {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    // Assuming DataType is an enum in your code
     @Enumerated(EnumType.STRING)
     @Column(name = "data_type", nullable = false, length = 10)
     private DataType dataType;

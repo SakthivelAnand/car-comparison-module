@@ -129,7 +129,7 @@ This API provides endpoints for managing cars, comparing their specifications, a
         *   `specId` (Integer): The ID of the specification.
     *   Response: Returns HTTP status 204 No Content.
 
-*   **GET /api/car-specifications**: Retrieves all `CarSpecifications`.
+*   **GET /api/car-specifications**: Retrieves all `CarSpecificationResponseDTO`.
     *   Response: Returns a list of `CarSpecification` objects.
 
 

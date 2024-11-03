@@ -9,6 +9,7 @@ import com.car360.carcomparison.car_comparison_module.exception.ResourceNotFound
 import com.car360.carcomparison.car_comparison_module.model.Car;
 import com.car360.carcomparison.car_comparison_module.repository.CarRepository;
 import com.car360.carcomparison.car_comparison_module.repository.CarSpecificationRepository;
+import com.car360.carcomparison.car_comparison_module.service.impl.CarServiceImpl;
 import com.car360.carcomparison.car_comparison_module.utils.SimilarityUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +37,6 @@ public class CarServiceImplTest {
 
     @Test
     public void testCreateCar_Success() {
-        // Arrange
         CarDTO carDTO = new CarDTO();
         carDTO.setName("Test Car");
         carDTO.setBrand("Test Brand");
@@ -58,10 +58,8 @@ public class CarServiceImplTest {
 
         when(carRepository.save(any(Car.class))).thenReturn(savedCar);
 
-        // Act
         Car result = carService.createCar(carDTO);
 
-        // Assert
         assertNotNull(result);
         assertEquals(savedCar.getCarId(), result.getCarId());
         assertEquals(savedCar.getName(), result.getName());
@@ -70,7 +68,6 @@ public class CarServiceImplTest {
 
     @Test
     public void testGetCarById_Success() {
-        // Arrange
         Integer carId = 1;
         Car car = new Car();
         car.setCarId(carId);
@@ -80,10 +77,8 @@ public class CarServiceImplTest {
 
         when(carRepository.findWithSpecificationsByCarId(carId)).thenReturn(Optional.of(car));
 
-        // Act
         Car result = carService.getCarById(carId);
 
-        // Assert
         assertNotNull(result);
         assertEquals(carId, result.getCarId());
         verify(carRepository, times(1)).findWithSpecificationsByCarId(carId);
@@ -91,19 +86,16 @@ public class CarServiceImplTest {
 
     @Test
     public void testGetCarById_NotFound() {
-        // Arrange
         Integer carId = 1;
 
         when(carRepository.findWithSpecificationsByCarId(carId)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> carService.getCarById(carId));
         verify(carRepository, times(1)).findWithSpecificationsByCarId(carId);
     }
 
     @Test
     public void testGetCarsByIds_Success() {
-        // Arrange
         List<Integer> carIds = Arrays.asList(1, 2, 3);
         Car car1 = new Car();
         car1.setCarId(1);
@@ -114,10 +106,8 @@ public class CarServiceImplTest {
 
         when(carRepository.findAllById(carIds)).thenReturn(Arrays.asList(car1, car2, car3));
 
-        // Act
         List<Car> result = carService.getCarsByIds(carIds);
 
-        // Assert
         assertNotNull(result);
         assertEquals(3, result.size());
         verify(carRepository, times(1)).findAllById(carIds);
@@ -125,7 +115,6 @@ public class CarServiceImplTest {
 
     @Test
     public void testGetCarsByIds_MissingIds() {
-        // Arrange
         List<Integer> carIds = Arrays.asList(1, 2, 3);
         Car car1 = new Car();
         car1.setCarId(1);
@@ -134,7 +123,6 @@ public class CarServiceImplTest {
 
         when(carRepository.findAllById(carIds)).thenReturn(Arrays.asList(car1, car2));
 
-        // Act & Assert
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> carService.getCarsByIds(carIds));
         assertTrue(exception.getMessage().contains("Cars not found with IDs: [3]"));
         verify(carRepository, times(1)).findAllById(carIds);
@@ -142,7 +130,6 @@ public class CarServiceImplTest {
 
     @Test
     public void testUpdateCar_Success() {
-        // Arrange
         Integer carId = 1;
         Car existingCar = new Car();
         existingCar.setCarId(carId);
@@ -161,10 +148,8 @@ public class CarServiceImplTest {
         when(carRepository.findWithSpecificationsByCarId(carId)).thenReturn(Optional.of(existingCar));
         when(carRepository.save(existingCar)).thenReturn(existingCar);
 
-        // Act
         Car result = carService.updateCar(carId, carDTO);
 
-        // Assert
         assertNotNull(result);
         assertEquals(carDTO.getName(), result.getName());
         assertEquals(carDTO.getBrand(), result.getBrand());
@@ -173,20 +158,17 @@ public class CarServiceImplTest {
 
     @Test
     public void testUpdateCar_NotFound() {
-        // Arrange
         Integer carId = 1;
         CarDTO carDTO = new CarDTO();
 
         when(carRepository.findWithSpecificationsByCarId(carId)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> carService.updateCar(carId, carDTO));
         verify(carRepository, never()).save(any());
     }
 
     @Test
     public void testDeleteCar_Success() {
-        // Arrange
         Integer carId = 1;
         Car existingCar = new Car();
         existingCar.setCarId(carId);
@@ -194,38 +176,31 @@ public class CarServiceImplTest {
 
         when(carRepository.findWithSpecificationsByCarId(carId)).thenReturn(Optional.of(existingCar));
 
-        // Act
         carService.deleteCar(carId);
 
-        // Assert
         verify(carRepository, times(1)).delete(existingCar);
     }
 
     @Test
     public void testDeleteCar_NotFound() {
-        // Arrange
         Integer carId = 1;
 
         when(carRepository.findWithSpecificationsByCarId(carId)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> carService.deleteCar(carId));
         verify(carRepository, never()).delete(any());
     }
 
     @Test
     public void testGetAllCars_Success() {
-        // Arrange
         Pageable pageable = PageRequest.of(0, 10);
         List<Car> cars = Arrays.asList(new Car(), new Car());
         Page<Car> carPage = new PageImpl<>(cars, pageable, cars.size());
 
         when(carRepository.findAll(pageable)).thenReturn(carPage);
 
-        // Act
         Page<Car> result = carService.getAllCars(pageable);
 
-        // Assert
         assertNotNull(result);
         assertEquals(2, result.getTotalElements());
         verify(carRepository, times(1)).findAll(pageable);
@@ -233,16 +208,13 @@ public class CarServiceImplTest {
 
     @Test
     public void testSearchCars_ByBrand() {
-        // Arrange
         String brand = "Test Brand";
         List<Car> cars = Arrays.asList(new Car(), new Car());
 
         when(carRepository.findByBrandContainingIgnoreCase(brand)).thenReturn(cars);
 
-        // Act
         List<Car> result = carService.searchCars(brand, null, null, null, null);
 
-        // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(carRepository, times(1)).findByBrandContainingIgnoreCase(brand);
@@ -250,16 +222,13 @@ public class CarServiceImplTest {
 
     @Test
     public void testSearchCars_ByCategory() {
-        // Arrange
         String category = "SUV";
         List<Car> cars = Arrays.asList(new Car(), new Car());
 
         when(carRepository.findByCategoryContainingIgnoreCase(category)).thenReturn(cars);
 
-        // Act
         List<Car> result = carService.searchCars(null, null, null, category, null);
 
-        // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(carRepository, times(1)).findByCategoryContainingIgnoreCase(category);
@@ -267,16 +236,13 @@ public class CarServiceImplTest {
 
     @Test
     public void testSearchCars_ByYear() {
-        // Arrange
         Integer year = 2021;
         List<Car> cars = Arrays.asList(new Car(), new Car());
 
         when(carRepository.findByModelYear(year)).thenReturn(cars);
 
-        // Act
         List<Car> result = carService.searchCars(null, null, year, null, null);
 
-        // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(carRepository, times(1)).findByModelYear(year);
@@ -284,7 +250,6 @@ public class CarServiceImplTest {
 
     @Test
     public void testSuggestSimilarCars_Success() {
-        // Arrange
         Integer carId = 1;
         int limit = 5;
         Car baseCar = new Car();
@@ -296,10 +261,8 @@ public class CarServiceImplTest {
         when(carRepository.findWithSpecificationsByCarId(carId)).thenReturn(Optional.of(baseCar));
         when(similarityUtil.findSimilarCars(baseCar, limit)).thenReturn(similarCars);
 
-        // Act
         List<Car> result = carService.suggestSimilarCars(carId, limit);
 
-        // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(similarityUtil, times(1)).findSimilarCars(baseCar, limit);
@@ -307,13 +270,11 @@ public class CarServiceImplTest {
 
     @Test
     public void testSuggestSimilarCars_NotFound() {
-        // Arrange
         Integer carId = 1;
         int limit = 5;
 
         when(carRepository.findWithSpecificationsByCarId(carId)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> carService.suggestSimilarCars(carId, limit));
         verify(similarityUtil, never()).findSimilarCars(any(), anyInt());
     }

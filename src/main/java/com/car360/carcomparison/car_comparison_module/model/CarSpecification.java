@@ -26,7 +26,7 @@ public class CarSpecification {
     @JsonIgnore
     private Car car;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("specId")
     @JoinColumn(name = "spec_id", nullable = false, insertable = false, updatable = false)
     private Specification specification;

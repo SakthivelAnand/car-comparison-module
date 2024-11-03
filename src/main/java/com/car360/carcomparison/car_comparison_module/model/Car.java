@@ -54,7 +54,7 @@ public class Car {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonManagedReference
     private List<CarSpecification> carSpecifications;
 

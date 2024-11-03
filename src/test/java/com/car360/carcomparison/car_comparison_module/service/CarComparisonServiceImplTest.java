@@ -10,6 +10,7 @@ import com.car360.carcomparison.car_comparison_module.mapper.CommonMapper;
 import com.car360.carcomparison.car_comparison_module.model.*;
 import com.car360.carcomparison.car_comparison_module.repository.CarRepository;
 import com.car360.carcomparison.car_comparison_module.repository.ComparisonRepository;
+import com.car360.carcomparison.car_comparison_module.service.impl.CarComparisonServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
